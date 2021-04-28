@@ -7,18 +7,26 @@ import speech_recognition
 import re
 import webbrowser
 
+
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[3].id)
 
-query_db = ["що таке", "шо таке", "що такє"]
-hello_db = ["привіт", "хай", "йо", "привєт"]
-
-
 
 def google_search(result):
     return webbrowser.open("https://www.google.com/search?q=" + result)
-    
+
+
+def say_hello(*args):
+    engine.say('Привіт і тобі')
+    engine.runAndWait()
+
+
+commands = {
+    ("що таке", "шо таке", "що такє"): google_search,
+    ("привіт", "хай", "йо", "привєт"): say_hello,
+}
+
 
 def record_and_recognize_audio():
 
@@ -31,15 +39,11 @@ def record_and_recognize_audio():
 
     result = r.recognize_google(audio, language='uk-UA')
 
-    for i in query_db:
-        if re.match(i, result):
-            google_search(result)
-            break
-    
-    for i in hello_db:
-        if re.match(i, result):
-            engine.say('Привіт і тобі')
-            engine.runAndWait()
+    # seatching in google
+    for key in commands.keys():
+        for kkey in key:
+            if re.match(kkey, result):
+                commands[key](result)
 
     return
 
@@ -54,13 +58,10 @@ if __name__ == '__main__':
 
     btn = QtWidgets.QPushButton(window)
     btn.move(100, 70)
-    btn.setText('Click on me')
+    btn.setText('Слухати')
     btn.setGeometry(150, 150, 100, 100)
     btn.clicked.connect(record_and_recognize_audio)
 
 
     window.show()
     sys.exit(app.exec_())
-
-
-
