@@ -22,28 +22,36 @@ def say_hello(*args):
     engine.runAndWait()
 
 
+def exit_app(*args):
+    exit()
+
 commands = {
     ("що таке", "шо таке", "що такє"): google_search,
     ("привіт", "хай", "йо", "привєт"): say_hello,
+    ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
 }
 
 
 def record_and_recognize_audio():
 
-    result = ''
+    while True:
+        result = ''
 
-    r = speech_recognition.Recognizer()
-    with speech_recognition.Microphone() as source:
-        print('Скажіть що небудь')
-        audio = r.listen(source, 4, 4)
+        r = speech_recognition.Recognizer()
+        with speech_recognition.Microphone() as source:
+            print('Скажіть що небудь')
+            try:
+                audio = r.listen(source, 4, 4)
+                result = r.recognize_google(audio, language='uk-UA')
 
-    result = r.recognize_google(audio, language='uk-UA')
+            except speech_recognition.WaitTimeoutError:
+                pass
 
-    # seatching in google
-    for key in commands.keys():
-        for kkey in key:
-            if re.match(kkey, result):
-                commands[key](result)
+        # seatching in google
+        for key in commands.keys():
+            for kkey in key:
+                if re.match(kkey, result):
+                    commands[key](result)
 
     return
 
@@ -56,6 +64,7 @@ if __name__ == '__main__':
     window.setWindowTitle('Simple program')
     window.setGeometry(300, 300, 300, 300)
 
+
     btn = QtWidgets.QPushButton(window)
     btn.move(100, 70)
     btn.setText('Слухати')
@@ -64,4 +73,8 @@ if __name__ == '__main__':
 
 
     window.show()
+
+    engine.say('Рада вітати вас сьогодні!')
+    engine.runAndWait()
+
     sys.exit(app.exec_())
