@@ -3,6 +3,7 @@ import pyttsx3
 import speech_recognition
 import re
 import webbrowser
+import wikipediaapi
 
 """
     This file contain all commands
@@ -20,11 +21,13 @@ class Commands:
         self.result = result
         return webbrowser.open(f"https://www.google.com/search?q={self.result}")
 
+
     def youtube_search(self, result):
         self.result = result.split(' ')
         self.command = self.result[0]
         self.result.remove(self.command)
         self.result = ' '.join(self.result)
+        
         return webbrowser.open(f'https://www.youtube.com/results?search_query={self.result}')
 
     def say_hello(self, *args):
@@ -36,6 +39,25 @@ class Commands:
         self.engine.say('Була рада допомогти вам')
         self.engine.runAndWait()
         exit()
+
+    
+    def search_tearm_in_wiki(self, result):
+        self.result = result.split(' ')
+        self.result.pop(0)
+        self.result = ' '.join(self.result)
+        self.wiki = wikipediaapi.Wikipedia('uk')
+        self.wiki_page = self.wiki.page(self.result)
+        
+        if self.wiki_page.exists():
+            webbrowser.open(self.wiki_page.fullurl)
+            self.engine.say(str(self.wiki_page.summary.split(".")[:3]))
+            self.engine.runAndWait()
+        else:
+            webbrowser.open(f'https://google.com/search?q={self.result}')
+        
+        return
+            
+
 
     
     def record_and_recognize_audio(self):
@@ -64,13 +86,16 @@ class Commands:
             for key in self.commands.keys():
                 for kkey in key: # loop over all commands inside tuple
                     if re.match(kkey, self.result):
+                        # self.commands[key] = list(self.commands[key])
+
                         self.commands[key](self, self.result) #start function
 
         return
 
     commands = {
-    ("що таке", "шо таке", "що такє"): google_search,
-    ("привіт", "хай", "йо", "привєт"): say_hello,
+    ("знайди", "шукай", "шукати", "гугл", "де знаходиться"): google_search,
+    ("привіт", "хай", "йо", "привєт", "вітаю"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
     ('відео', "включи відео", "ютуб", "відос"): youtube_search,
+    ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki
     }

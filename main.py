@@ -58,23 +58,4 @@ def record_and_recognize_audio():
 
 if __name__ == '__main__':
 
-    app = QApplication(sys.argv)
-    window = QMainWindow()
-
-    window.setWindowTitle('Simple program')
-    window.setGeometry(300, 300, 300, 300)
-
-
-    btn = QtWidgets.QPushButton(window)
-    btn.move(100, 70)
-    btn.setText('Слухати')
-    btn.setGeometry(150, 150, 100, 100)
-    btn.clicked.connect(record_and_recognize_audio)
-
-
-    window.show()
-
-    engine.say('Рада вітати вас сьогодні!')
-    engine.runAndWait()
-
-    sys.exit(app.exec_())
+    record_and_recognize_audio()

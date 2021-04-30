@@ -24,12 +24,9 @@ class App(Commands):
         
         self.window.show()
 
-
-    # def say_hello(self):
-    #     print('Hello')
         
-
 if __name__ == '__main__':
+    
     app = QApplication(sys.argv)
     ex = App()
     sys.exit(app.exec_())
