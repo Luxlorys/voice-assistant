@@ -4,7 +4,9 @@ import speech_recognition
 import re
 import webbrowser
 
-
+"""
+    This file contain all commands
+"""
 class Commands:
 
     engine = pyttsx3.init()
@@ -13,10 +15,17 @@ class Commands:
     engine.setProperty('rate', rate-30)
     engine.setProperty('voice', voices[3].id)
 
+    # seach for tearm on google
     def google_search(self, result):
         self.result = result
-        return webbrowser.open("https://www.google.com/search?q=" + self.result)
+        return webbrowser.open(f"https://www.google.com/search?q={self.result}")
 
+    def youtube_search(self, result):
+        self.result = result.split(' ')
+        self.command = self.result[0]
+        self.result.remove(self.command)
+        self.result = ' '.join(self.result)
+        return webbrowser.open(f'https://www.youtube.com/results?search_query={self.result}')
 
     def say_hello(self, *args):
         self.engine.say('Вітаю, я Сівія')
@@ -30,7 +39,12 @@ class Commands:
 
     
     def record_and_recognize_audio(self):
+        """
+        1 constant listening to the microphone
+        2 loop over all commands (key is command, values is function)
+        """
         while True:
+
             self.result = ''
 
             r = speech_recognition.Recognizer()
@@ -46,11 +60,11 @@ class Commands:
                 except speech_recognition.WaitTimeoutError:
                     pass
 
-            # seatching in google
+            # loop over all tuples
             for key in self.commands.keys():
-                for kkey in key:
+                for kkey in key: # loop over all commands inside tuple
                     if re.match(kkey, self.result):
-                        self.commands[key](self, self.result)
+                        self.commands[key](self, self.result) #start function
 
         return
 
@@ -58,4 +72,5 @@ class Commands:
     ("що таке", "шо таке", "що такє"): google_search,
     ("привіт", "хай", "йо", "привєт"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
+    ('відео', "включи відео", "ютуб", "відос"): youtube_search,
     }
