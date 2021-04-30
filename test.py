@@ -1,32 +1,61 @@
 from PyQt5 import QtWidgets 
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from cmds import Commands
 
 import sys
-
-class App(Commands):
-
-    def __init__(self):
-        super().__init__()
-        self.initUI()
+import pyttsx3
+import speech_recognition
+import re
+import webbrowser
 
 
-    def initUI(self):
-        self.window = QMainWindow()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[3].id)
 
-        self.window.setWindowTitle('Голосовий асистент CVA')
-        self.window.setGeometry(500, 500, 500, 500)
 
-        self.btn = QtWidgets.QPushButton(self.window)
-        self.btn.move(50, 50)
-        self.btn.setText('Слухати')
-        self.btn.clicked.connect(self.record_and_recognize_audio)
-        
-        self.window.show()
+def google_search(result):
+    return webbrowser.open("https://www.google.com/search?q=" + result)
 
-        
+
+def say_hello(*args):
+    engine.say('Привіт і тобі')
+    engine.runAndWait()
+
+
+def exit_app(*args):
+    exit()
+
+commands = {
+    ("що таке", "шо таке", "що такє"): google_search,
+    ("привіт", "хай", "йо", "привєт"): say_hello,
+    ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
+}
+
+
+def record_and_recognize_audio():
+
+    while True:
+        result = ''
+
+        r = speech_recognition.Recognizer()
+        with speech_recognition.Microphone() as source:
+            print('Скажіть що небудь')
+            try:
+                audio = r.listen(source, 4, 4)
+                result = r.recognize_google(audio, language='uk-UA')
+
+            except speech_recognition.WaitTimeoutError:
+                pass
+
+        # seatching in google
+        for key in commands.keys():
+            for kkey in key:
+                if re.match(kkey, result):
+                    commands[key](result)
+
+    return
+
+
 if __name__ == '__main__':
-    
-    app = QApplication(sys.argv)
-    ex = App()
-    sys.exit(app.exec_())
+
+    record_and_recognize_audio()
