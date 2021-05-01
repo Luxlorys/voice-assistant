@@ -5,16 +5,22 @@ import re
 import webbrowser
 import wikipediaapi
 
+from help import Help
+
 """
     This file contain all commands
 """
-class Commands:
+class Commands(Help):
 
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
     rate = engine.getProperty('rate')
     engine.setProperty('rate', rate-30)
     engine.setProperty('voice', voices[3].id)
+
+
+    def help_user(self, *args):
+        self.help_for_user()
 
     # seach for tearm on google
     def google_search(self, result):
@@ -48,23 +54,28 @@ class Commands:
         self.wiki = wikipediaapi.Wikipedia('uk')
         self.wiki_page = self.wiki.page(self.result)
         
-        if self.wiki_page.exists():
-            webbrowser.open(self.wiki_page.fullurl)
-            self.engine.say(str(self.wiki_page.summary.split(".")[:3]))
-            self.engine.runAndWait()
-        else:
-            webbrowser.open(f'https://google.com/search?q={self.result}')
-        
+        try:
+            if self.wiki_page.exists():
+                webbrowser.open(self.wiki_page.fullurl)
+                self.engine.say(str(self.wiki_page.summary.split(".")[:3]))
+                self.engine.runAndWait()
+            else:
+                webbrowser.open(f'https://google.com/search?q={self.result}')
+        except Exception:
+            pass
+
         return
             
-
-
     
     def record_and_recognize_audio(self):
         """
         1 constant listening to the microphone
         2 loop over all commands (key is command, values is function)
         """
+        self.engine.say('Вітаю вас, очікую команди')
+        self.engine.runAndWait()
+
+
         while True:
 
             self.result = ''
@@ -86,8 +97,6 @@ class Commands:
             for key in self.commands.keys():
                 for kkey in key: # loop over all commands inside tuple
                     if re.match(kkey, self.result):
-                        # self.commands[key] = list(self.commands[key])
-
                         self.commands[key](self, self.result) #start function
 
         return
@@ -97,5 +106,6 @@ class Commands:
     ("привіт", "хай", "йо", "привєт", "вітаю"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
     ('відео', "включи відео", "ютуб", "відос"): youtube_search,
-    ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki
+    ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
+    ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
     }
