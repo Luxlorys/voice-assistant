@@ -20,6 +20,8 @@ class App(Commands, QMainWindow, Help):
 
         self.setWindowTitle('Голосовий асистент CVA')
         self.setWindowIcon(QIcon('img/voice_icon.png'))
+        self.setIconSize(QSize(20, 20))
+        self.setFixedSize(520, 400)
         self.setGeometry(300, 300, 520, 400)
         self.setStyleSheet("background-image: url(img/background.png);")
 
@@ -35,8 +37,9 @@ class App(Commands, QMainWindow, Help):
         self.help_btn.setText('Допомога')
         self.help_btn.setIconSize(QSize(17, 17))
         self.help_btn.setShortcut('F2')
-        self.help_btn.setStyleSheet("color: #fff;")
+        self.help_btn.setStyleSheet("color: #fff; border-radius: 10px")
         self.help_btn.setFont(self.font)
+        self.help_btn.setToolTip('Натисніть клавішу F1, щоб дізнатися про можливості асистента')
         self.help_btn.clicked.connect(self.help_for_user)
 
         self.btn = QPushButton(self)
@@ -44,6 +47,7 @@ class App(Commands, QMainWindow, Help):
         self.btn.setIcon(QIcon('img/micro.png'))
         self.btn.setIconSize(QSize(50, 80))
         self.btn.setShortcut('F1')
+        self.btn.setStyleSheet("border-radius: 20px")
         self.btn.clicked.connect(self.record_and_recognize_audio)
 
         self.show()

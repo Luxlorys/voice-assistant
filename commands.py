@@ -5,6 +5,7 @@ import re
 import webbrowser
 import wikipediaapi
 
+from datetime import datetime
 from help import Help
 
 """
@@ -17,6 +18,37 @@ class Commands(Help):
     rate = engine.getProperty('rate')
     engine.setProperty('rate', rate-30)
     engine.setProperty('voice', voices[3].id)
+
+
+    def time(self, *args):
+        self.now = datetime.now()
+        self.hour = self.now.hour
+        self.minutes = self.now.minute
+        self.engine.say(f'Зараз {self.hour} годин, {self.minutes} хвилин')
+        self.engine.runAndWait()
+
+    
+    def date(self, *args):
+        self.now = datetime.now()
+        self.week_day = self.now.strftime('%A')
+
+        if self.week_day == 'Monday':
+            self.week_day = 'Понеділок'
+        elif self.week_day == 'Tuesday':
+            self.week_day = 'Вівторок'
+        elif self.week_day == 'Wedesday':
+            self.week_day = 'Середа'
+        elif self.week_day == 'Thursday':
+            self.week_day = 'Четвер'
+        elif self.week_day == 'Friday':
+            self.week_day = 'П"ятнися'
+        elif self.week_day == 'Saturday':
+            self.week_day = 'Субота'
+        else:
+            self.week_day == 'Неділя'
+
+        self.engine.say(f'Сьогодні {self.week_day}')
+        self.engine.runAndWait()
 
 
     def help_user(self, *args):
@@ -108,4 +140,6 @@ class Commands(Help):
     ('відео', "включи відео", "ютуб", "відос"): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
+    ('яка година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
+    ('дата', "день", "який день", "який сьогодні день", "сьогодні день"): date
     }
