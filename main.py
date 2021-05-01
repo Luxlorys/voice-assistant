@@ -21,7 +21,7 @@ class App(Commands, QMainWindow, Help):
         self.setWindowTitle('Голосовий асистент CVA')
         self.setWindowIcon(QIcon('img/voice_icon.png'))
         self.setGeometry(300, 300, 520, 400)
-        self.setStyleSheet("background-image: url(img/phone1.png);")
+        self.setStyleSheet("background-image: url(img/background.png);")
 
         self.font = QFont()
         self.font.setFamily("Bahnschrift SemiBold")
