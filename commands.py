@@ -7,6 +7,7 @@ import wikipediaapi
 
 from datetime import datetime
 from help import Help
+from random import choice
 
 """
     This file contain all commands
@@ -19,6 +20,42 @@ class Commands(Help):
     engine.setProperty('rate', rate-30)
     engine.setProperty('voice', voices[3].id)
 
+    coin = ['орел', 'решка']
+    cube = [
+        'одиниця', 'двійка', 'трійка', 
+        'читвірка', 'п"ятірка', 'шістка'
+        ]
+
+    hello = [
+        'Вітаю, я Сівія', 'Привіт, я Сівія', 'Привітусики',
+        'Рада чути вас', 'Добридень', 'Добрий день',
+        'Рада вітати вас', 'Доброго здоров"я', 'День добрий',
+    ]
+
+    leave = [
+        'До зустрічі', 'Побачимося', 'Бувайте',
+        'Бувайте здорові', 'Всього вам доброго', 'Всього найкращого',
+        'На все добре', 'Була рада вам допомогти', 'Прощавайте',
+    ]
+
+
+    def flip_cube(self, *args):
+        self.engine.say(f'Випала {choice(self.cube)}')
+        self.engine.runAndWait()
+
+
+    def flip_coin(self, *args):
+        if choice(self.coin) == 'орел':
+            self.engine.say('Випав орел')
+            self.engine.runAndWait()
+        else:
+            self.engine.say('Випала решка')
+            self.engine.runAndWait()
+
+
+    def run_to_do(self, *args):
+        return webbrowser.open('http://127.0.0.1:5000/')
+
 
     def time(self, *args):
         self.now = datetime.now()
@@ -29,8 +66,9 @@ class Commands(Help):
 
     
     def date(self, *args):
-        self.now = datetime.now()
-        self.week_day = self.now.strftime('%A')
+        self.date = datetime.now()
+        self.now = self.date.strftime('%m місяць / %d  день / %Y року')
+        self.week_day = self.date.strftime('%A')
 
         if self.week_day == 'Monday':
             self.week_day = 'Понеділок'
@@ -47,14 +85,14 @@ class Commands(Help):
         else:
             self.week_day == 'Неділя'
 
-        self.engine.say(f'Сьогодні {self.week_day}')
+        self.engine.say(f'Сьогодні {self.week_day} {self.now}')
         self.engine.runAndWait()
 
 
     def help_user(self, *args):
         self.help_for_user()
 
-    # seach for tearm on google
+
     def google_search(self, result):
         self.result = result
         return webbrowser.open(f"https://www.google.com/search?q={self.result}")
@@ -68,13 +106,14 @@ class Commands(Help):
         
         return webbrowser.open(f'https://www.youtube.com/results?search_query={self.result}')
 
+
     def say_hello(self, *args):
-        self.engine.say('Вітаю, я Сівія')
+        self.engine.say(choice(self.hello))
         self.engine.runAndWait()
 
     
     def exit_app(self, *args):
-        self.engine.say('Була рада допомогти вам')
+        self.engine.say(choice(self.leave))
         self.engine.runAndWait()
         exit()
 
@@ -133,13 +172,16 @@ class Commands(Help):
 
         return
 
+
     commands = {
-    ("знайди", "шукай", "шукати", "гугл", "де знаходиться"): google_search,
-    ("привіт", "хай", "йо", "привєт", "вітаю"): say_hello,
+    ("привіт", "Добрий вечір", "День добрий", "Добрий день", "вітаю"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
+    ("знайди", "шукай", "шукати", "гугл", "де знаходиться"): google_search,
     ('відео', "включи відео", "ютуб", "відос"): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
     ('яка година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
-    ('дата', "день", "який день", "який сьогодні день", "сьогодні день"): date
+    ('дата', "день", "який день", "який сьогодні день", "сьогодні день"): date,
+    ("монетка", "кинь монетку", "жереб", "підкинь жереб", "підкинь монету", "монета"): flip_coin,
+    ("гральний", "кинь кубик", "підкинь кубик", "кубик"): flip_cube,
     }
