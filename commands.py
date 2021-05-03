@@ -143,7 +143,7 @@ class Commands(Help):
         1 constant listening to the microphone
         2 loop over all commands (key is command, values is function)
         """
-        self.engine.say('Вітаю вас, очікую команди')
+        self.engine.say('очікую команди')
         self.engine.runAndWait()
 
 

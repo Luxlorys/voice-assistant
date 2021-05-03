@@ -38,6 +38,7 @@ class App(Commands, QMainWindow, Help):
         self.help_btn.setIconSize(QSize(17, 17))
         self.help_btn.setShortcut('F2')
         self.help_btn.setStyleSheet("color: #fff; border-radius: 10px")
+        self.help_btn.setCursor(QCursor(Qt.WhatsThisCursor))
         self.help_btn.setFont(self.font)
         self.help_btn.setToolTip('Натисніть клавішу F1, щоб дізнатися про можливості асистента')
         self.help_btn.clicked.connect(self.help_for_user)
@@ -48,6 +49,7 @@ class App(Commands, QMainWindow, Help):
         self.btn.setIconSize(QSize(50, 80))
         self.btn.setShortcut('F1')
         self.btn.setStyleSheet("border-radius: 20px")
+        self.btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn.clicked.connect(self.record_and_recognize_audio)
 
         self.show()
