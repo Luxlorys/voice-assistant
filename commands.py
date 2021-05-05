@@ -53,39 +53,59 @@ class Commands(Help):
             self.engine.runAndWait()
 
 
-    def run_to_do(self, *args):
-        return webbrowser.open('http://127.0.0.1:5000/')
-
-
     def time(self, *args):
         self.now = datetime.now()
         self.hour = self.now.hour
         self.minutes = self.now.minute
-        self.engine.say(f'Зараз {self.hour} годин, {self.minutes} хвилин')
+        self.engine.say(f'Зараз {self.hour}, {self.minutes}')
         self.engine.runAndWait()
 
     
     def date(self, *args):
         self.date = datetime.now()
-        self.now = self.date.strftime('%m місяць / %d  день / %Y року')
+        self.month = self.date.strftime('%m')
+        self.day = self.date.strftime('%d')
+        self.year = self.date.strftime('%Y')
         self.week_day = self.date.strftime('%A')
 
-        if self.week_day == 'Monday':
-            self.week_day = 'Понеділок'
-        elif self.week_day == 'Tuesday':
-            self.week_day = 'Вівторок'
-        elif self.week_day == 'Wedesday':
-            self.week_day = 'Середа'
-        elif self.week_day == 'Thursday':
-            self.week_day = 'Четвер'
-        elif self.week_day == 'Friday':
-            self.week_day = 'П"ятнися'
-        elif self.week_day == 'Saturday':
-            self.week_day = 'Субота'
-        else:
-            self.week_day == 'Неділя'
+        self.years = {
+            '2021': 'Дві тисячи двадцять першого',
+            '2022': 'Дві тисячи двадцять другого',
+            '2023': 'Дві тисячи двадцять третього',
+            '2024': 'Дві тисячи двадцять четвертого',
+        } # lmao, it sounds better
 
-        self.engine.say(f'Сьогодні {self.week_day} {self.now}')
+        self.week = {
+            'Monday': 'Понеділок',
+            'Tuesday': 'Вівторок',
+            'Wednesday': 'Середа',
+            'Thursday': 'Четвер',
+            'Friday': 'П"ятниця',
+            'Saturday': 'Субота',
+            'Sunday': 'Неділя'
+        }
+
+        self.year_months = {
+            '01': 'Січня', '02': 'Лютого', '03': 'Березня',
+            '04': 'Квітня', '05': 'Травня', '06': 'Червня',
+            '07': 'Липня', '08': 'Серпня', '09': 'Вересня',
+            '10': 'Жовтня', '11': 'Листопада', '12': 'Грудня',
+        }
+
+        for day in self.week.keys():
+            if self.week_day == day:
+                self.week_day = self.week[day]
+
+        for day in self.year_months.keys():
+            if self.month == day:
+                self.month = self.year_months[day]
+
+        for key in self.years.keys():
+            if self.year == key:
+                self.year = self.years[key]
+
+
+        self.engine.say(f'Сьогодні {self.week_day}, {self.day}, {self.month}, {self.year} року')
         self.engine.runAndWait()
 
 
@@ -151,16 +171,16 @@ class Commands(Help):
 
             self.result = ''
 
-            r = speech_recognition.Recognizer()
+            self.r = speech_recognition.Recognizer()
             with speech_recognition.Microphone() as source:
                 print('Скажіть що небудь')
                 try:
-                    self.audio = r.listen(source, 4, 4)
+                    self.audio = self.r.listen(source, 3, 3)
                     try:
-                        self.result = r.recognize_google(self.audio, language='uk-UA')
+                        self.result = self.r.recognize_google(self.audio, language='uk-UA')
                     except speech_recognition.UnknownValueError:
                         pass
-
+                    
                 except speech_recognition.WaitTimeoutError:
                     pass
 

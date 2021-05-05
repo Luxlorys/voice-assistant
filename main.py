@@ -48,8 +48,8 @@ class App(Commands, QMainWindow, Help):
         self.btn.setIcon(QIcon('img/microphone.png'))
         self.btn.setIconSize(QSize(70, 100))
         self.btn.setShortcut('F1')
-        self.btn.setStyleSheet("border-radius: 20px")
-        self.btn.setToolTip('Натисніть клавішу F2, щоб дізнатися про можливості асистента')
+        self.btn.setStyleSheet("color: black; border-radius: 20px")
+        self.btn.setToolTip('Натисніть клавішу F2, щоб дати команду асистенту')
         self.btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn.clicked.connect(self.record_and_recognize_audio)
 
