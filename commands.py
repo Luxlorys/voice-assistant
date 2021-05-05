@@ -39,6 +39,34 @@ class Commands(Help):
     ]
 
 
+    def calculate(self, result):
+        self.result = result
+        self.result = result.split(' ')
+        self.result.pop(0)
+        self.result = ' '.join(self.result)
+        if '+' in self.result:
+            self.result = self.result.split(' + ')
+            self.result = int(self.result[0]) + int(self.result[1])
+            self.engine.say(f'Результат {self.result}')
+            self.engine.runAndWait()
+        elif '-' in self.result:
+            self.result = self.result.split(' - ')
+            self.result = int(self.result[0]) - int(self.result[1])
+            self.engine.say(f'Результат {self.result}')
+            self.engine.runAndWait()
+        elif '*' in self.result:
+            self.result = self.result.split(' * ')
+            self.result = int(self.result[0]) * int(self.result[1])
+            self.engine.say(f'Результат {self.result}')
+            self.engine.runAndWait()
+        elif '/' in self.result:
+            self.result = self.result.split(' / ')
+            self.result = int(self.result[0]) / int(self.result[1])
+            self.result = int(self.result)
+            self.engine.say(f'Результат {self.result}')
+            self.engine.runAndWait()
+
+
     def flip_cube(self, *args):
         self.engine.say(f'Випала {choice(self.cube)}')
         self.engine.runAndWait()
@@ -139,9 +167,11 @@ class Commands(Help):
 
     
     def search_tearm_in_wiki(self, result):
-        self.result = result.split(' ')
-        self.result.pop(0)
-        self.result = ' '.join(self.result)
+        self.result = result
+        self.result = self.result.replace('що таке ', '')
+        self.result = self.result.replace('хто такий ', '')
+        self.result = self.result.replace('термін ', '')
+        self.result = self.result.replace('слово ', '')
         self.wiki = wikipediaapi.Wikipedia('uk')
         self.wiki_page = self.wiki.page(self.result)
         
@@ -158,6 +188,7 @@ class Commands(Help):
         return
             
     
+    # the next code causes vomiting
     def record_and_recognize_audio(self):
         """
         1 constant listening to the microphone
@@ -185,23 +216,28 @@ class Commands(Help):
                     pass
 
             # loop over all tuples
+            # я из-за регулярок весь день не кушал
             for key in self.commands.keys():
                 for kkey in key: # loop over all commands inside tuple
-                    if re.match(kkey, self.result):
-                        self.commands[key](self, self.result) #start function
+                    try:
+                        if re.match(kkey, self.result):
+                            self.commands[key](self, self.result) #start function
+                    except TypeError:
+                        pass
 
         return
 
 
     commands = {
-    ("привіт", "Добрий вечір", "День добрий", "Добрий день", "вітаю"): say_hello,
+    ("привіт", "добрий вечір", "день добрий", "добрий день", "вітаю"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
     ("знайди", "шукай", "шукати", "гугл", "де знаходиться"): google_search,
     ('відео', "включи відео", "ютуб", "відос"): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
-    ('яка година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
+    ('котра година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
     ('дата', "день", "який день", "який сьогодні день", "сьогодні день"): date,
     ("монетка", "кинь монетку", "жереб", "підкинь жереб", "підкинь монету", "монета"): flip_coin,
-    ("гральний", "кинь кубик", "підкинь кубик", "кубик"): flip_cube,
+    ("гральний кубик", "кинь кубик", "підкинь кубик"): flip_cube,
+    ('порахуй', 'розрахуй', 'калькулятор', 'скільки'): calculate,
     }
