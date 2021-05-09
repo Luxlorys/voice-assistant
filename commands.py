@@ -1,4 +1,5 @@
 import sys
+import os
 import pyttsx3
 import speech_recognition
 import re
@@ -38,12 +39,32 @@ class Commands(Help):
         'На все добре', 'Була рада вам допомогти', 'Прощавайте',
     ]
 
+    # погода "Город"
+    # Переверсти "Слово" на "Язык"
+    # Камень ножницы бумага
+    # Заметки
+    # курс "Валюта"
+    # как дела
+    # чем занимаешься
+
+    def shutdown_pc(self, *args):
+        self.engine.say('Вимимкаю комп"ютер')
+        self.engine.runAndWait()
+        os.system('shutdown /s /t 1')
+
+
+    def restart_pc(self, *args):
+        self.engine.say('Перезавантажую комп"ютер')
+        self.engine.runAndWait()
+        os.system('shutdown /r /t 1')
+
 
     def calculate(self, result):
         self.result = result
         self.result = result.split(' ')
         self.result.pop(0)
         self.result = ' '.join(self.result)
+
         if '+' in self.result:
             self.result = self.result.split(' + ')
             self.result = int(self.result[0]) + int(self.result[1])
@@ -147,10 +168,11 @@ class Commands(Help):
 
 
     def youtube_search(self, result):
-        self.result = result.split(' ')
-        self.command = self.result[0]
-        self.result.remove(self.command)
-        self.result = ' '.join(self.result)
+        self.result = result
+        self.result = self.result.replace('відео ', "")
+        self.result = self.result.replace('включи ', "")
+        self.result = self.result.replace('YouTube ', "")
+        self.result = self.result.replace('відос ', "")
         
         return webbrowser.open(f'https://www.youtube.com/results?search_query={self.result}')
 
@@ -215,8 +237,12 @@ class Commands(Help):
                 except speech_recognition.WaitTimeoutError:
                     pass
 
+                except speech_recognition.RequestError:
+                    self.engine.say('Виникли помилки при розпізнанні мови. Перевірте підключення до мережі')
+                    self.engine.runAndWait()
+
             # loop over all tuples
-            # я из-за регулярок весь день не кушал
+            # я из-за регулярок весь день не кушал, извините за такой плохой код, мне самому не нравится
             for key in self.commands.keys():
                 for kkey in key: # loop over all commands inside tuple
                     try:
@@ -229,10 +255,10 @@ class Commands(Help):
 
 
     commands = {
-    ("привіт", "добрий вечір", "день добрий", "добрий день", "вітаю"): say_hello,
+    ("привіт", "добрий вечір", "день добрий", "добрий день", "вітаю", "йо", "хай"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
-    ("знайди", "шукай", "шукати", "гугл", "де знаходиться"): google_search,
-    ('відео', "включи відео", "ютуб", "відос"): youtube_search,
+    ("знайди", "шукай", "шукати", "гугл", "де знаходиться", "як"): google_search,
+    ('відео', "включи відео", "ютуб", "відос", "включи", 'YouTube'): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
     ('котра година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
@@ -240,4 +266,6 @@ class Commands(Help):
     ("монетка", "кинь монетку", "жереб", "підкинь жереб", "підкинь монету", "монета"): flip_coin,
     ("гральний кубик", "кинь кубик", "підкинь кубик"): flip_cube,
     ('порахуй', 'розрахуй', 'калькулятор', 'скільки'): calculate,
+    ('вимкни ПК', 'виключи ПК', 'завершити роботу ПК', 'вимкнути ПК', 'виключити комп"ютер'): shutdown_pc,
+    ('рестарт', 'перезавантаж', 'вимкни та включи', 'рестарт ПК', 'перезагрузи ПК'): restart_pc,
     }
