@@ -5,6 +5,7 @@ import speech_recognition
 import re
 import webbrowser
 import wikipediaapi
+import pyowm
 
 from datetime import datetime
 from help import Help
@@ -19,31 +20,74 @@ class Commands(Help):
     voices = engine.getProperty('voices')
     rate = engine.getProperty('rate')
     engine.setProperty('rate', rate-30)
-    engine.setProperty('voice', voices[3].id)
+    engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localozation on my computer
 
-    coin = ['орел', 'решка']
+    coin = ['орел', 'решка'] # if user say 'flip coin' 
     cube = [
         'одиниця', 'двійка', 'трійка', 
         'читвірка', 'п"ятірка', 'шістка'
-        ]
+        ] # if user say 'flip cube'
 
+    # if user say 'hallo'
     hello = [
         'Вітаю, я Сівія', 'Привіт, я Сівія', 'Привітусики',
         'Рада чути вас', 'Добридень', 'Добрий день',
         'Рада вітати вас', 'Доброго здоров"я', 'День добрий',
     ]
 
+    # if user leave
     leave = [
         'До зустрічі', 'Побачимося', 'Бувайте',
         'Бувайте здорові', 'Всього вам доброго', 'Всього найкращого',
         'На все добре', 'Була рада вам допомогти', 'Прощавайте',
     ]
 
-    # погода "Город"
-    # Переверсти "Слово" на "Язык"
-    # курс "Валюта"
-    # как дела
-    # чем занимаешься
+    # if user say 'how are you?'
+    mood = [
+        'Як завжди все добре, а ти як?', 'Настрій відмінний - як перед вихідними', 'Сплю і бачу страшний сон, в якому ти у мене питаєш, що я роблю',
+        'Все добре, дякую, що цікавитеся. А ви як?', 'Мрію про щасливе майбутнє', 'Як у казці!', 
+        'Як завжди - відмінно', 'Дякую. Все гаразд', 'У вашій компанії стало краще'
+    ]
+    
+    actions = [
+        'Протираю пил з посуду, що стоїть на моєму столі', 'Мрію про щасливе майбутнє', 'Займаюся метанням слини в стелю',
+        'Намагаюся навчити кота говорити «привіт»', 'Вирішила влаштувати дегустацію чаю', 'Відзначаю день міста в Кейптауні', 
+        'Переглядаю «Санта-Барбару», останній сезон', 'Ставлю рекорд з поїдання мармеладу', 'Сушу сухарі'
+    ]
+
+    # музика
+
+    def get_weather(self, result):
+        self.result = result
+        self.result = self.result.replace('погода ', '')
+        self.result = self.result.replace('яка погода ', '')
+        self.result = self.result.replace('яка сьогодні погода ', '')
+        
+        self.owm = pyowm.OWM('6f7f209b9973d7cfbdcbf0c6c651eb3f')
+        self.mgr = self.owm.weather_manager()
+
+        self.observation = self.mgr.weather_at_place(self.result)
+        self.w = self.observation.weather
+
+        self.valid_temperature = self.w.temperature('celsius')['temp']
+        self.max_temperature = self.w.temperature('celsius')['temp_max']
+        self.min_temperature = self.w.temperature('celsius')['temp_min']
+        
+        self.engine.say(f'Сьогодні в місті {self.result} {self.valid_temperature} градусів')
+        self.engine.say(f'Максимальна кількість градусів - {self.max_temperature}')
+        self.engine.say(f'Мінімальна кількість градусів - {self.min_temperature}')
+        self.engine.runAndWait()
+
+
+    def speak_with_user(self, result):
+        self.result = result
+        if self.result == 'як справи' or self.result == 'як ти' or self.result == 'як твої справи':
+            self.engine.say(choice(self.mood))
+            self.engine.runAndWait()
+        elif self.result == 'чо робиш' or self.result == 'чим займаєшся' or self.result == 'що нового':
+            self.engine.say(choice(self.actions))
+            self.engine.runAndWait()
+
 
     def shutdown_pc(self, *args):
         self.engine.say('Вимимкаю комп"ютер')
@@ -214,7 +258,7 @@ class Commands(Help):
         1 constant listening to the microphone
         2 loop over all commands (key is command, values is function)
         """
-        self.engine.say('очікую команди')
+        self.engine.say('очікую команду')
         self.engine.runAndWait()
 
 
@@ -224,11 +268,12 @@ class Commands(Help):
 
             self.r = speech_recognition.Recognizer()
             with speech_recognition.Microphone() as source:
-                print('Скажіть що небудь')
+                # print('Скажіть що небудь')
                 try:
                     self.audio = self.r.listen(source, 3, 3)
                     try:
                         self.result = self.r.recognize_google(self.audio, language='uk-UA')
+                        self.result = self.result.lower()
                     except speech_recognition.UnknownValueError:
                         pass
                     
@@ -255,8 +300,8 @@ class Commands(Help):
     commands = {
     ("привіт", "добрий вечір", "день добрий", "добрий день", "вітаю", "йо", "хай"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
-    ("знайди", "шукай", "шукати", "гугл", "де знаходиться", "як"): google_search,
-    ('відео', "включи відео", "ютуб", "відос", "включи", 'YouTube'): youtube_search,
+    ("знайди", "шукай", "шукати", "гугл", "де знаходиться", "курс", "який курс"): google_search,
+    ('відео', "включи відео", "ютуб", "відос", "включи", 'youtube'): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
     ('котра година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
@@ -266,4 +311,7 @@ class Commands(Help):
     ('порахуй', 'розрахуй', 'калькулятор', 'скільки'): calculate,
     ('вимкни ПК', 'виключи ПК', 'завершити роботу ПК', 'вимкнути ПК', 'виключити комп"ютер'): shutdown_pc,
     ('рестарт', 'перезавантаж', 'вимкни та включи', 'рестарт ПК', 'перезагрузи ПК'): restart_pc,
+    ('як справи', 'як ти', 'як твої справи', 
+    'що робиш', 'чим займаєшся', 'що нового'): speak_with_user,
+    ('погода', 'яка погода', 'яка сьогодні погода'): get_weather,
     }
