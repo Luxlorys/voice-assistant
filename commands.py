@@ -73,9 +73,9 @@ class Commands(Help):
         self.max_temperature = self.w.temperature('celsius')['temp_max']
         self.min_temperature = self.w.temperature('celsius')['temp_min']
         
-        self.engine.say(f'Сьогодні в місті {self.result} {self.valid_temperature} градусів')
-        self.engine.say(f'Максимальна кількість градусів - {self.max_temperature}')
-        self.engine.say(f'Мінімальна кількість градусів - {self.min_temperature}')
+        self.engine.say(f'Сьогодні в місті {self.result} {int(self.valid_temperature)} градусів')
+        self.engine.say(f'Максимальна кількість градусів - {int(self.max_temperature)+1}')
+        self.engine.say(f'Мінімальна кількість градусів - {int(self.min_temperature)-1}')
         self.engine.runAndWait()
 
 
