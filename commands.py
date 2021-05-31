@@ -20,7 +20,7 @@ class Commands(Help):
     voices = engine.getProperty('voices')
     rate = engine.getProperty('rate')
     engine.setProperty('rate', rate-30)
-    engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localozation on my computer
+    engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localization on my computer
 
     coin = ['орел', 'решка'] # if user say 'flip coin' 
     cube = [
@@ -55,7 +55,6 @@ class Commands(Help):
         'Переглядаю «Санта-Барбару», останній сезон', 'Ставлю рекорд з поїдання мармеладу', 'Сушу сухарі'
     ]
 
-    # музика
 
     def get_weather(self, result):
         self.result = result
@@ -283,7 +282,7 @@ class Commands(Help):
                 except speech_recognition.RequestError:
                     self.engine.say('Виникли помилки при розпізнанні мови. Перевірте підключення до мережі')
                     self.engine.runAndWait()
-
+            
             # loop over all tuples
             # я из-за регулярок весь день не кушал, извините за такой плохой код, мне самому не нравится
             for key in self.commands.keys():
