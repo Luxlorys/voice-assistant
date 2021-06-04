@@ -65,17 +65,22 @@ class Commands(Help):
         self.owm = pyowm.OWM('6f7f209b9973d7cfbdcbf0c6c651eb3f')
         self.mgr = self.owm.weather_manager()
 
-        self.observation = self.mgr.weather_at_place(self.result)
-        self.w = self.observation.weather
+        try:
+            self.observation = self.mgr.weather_at_place(self.result)
+            self.w = self.observation.weather
 
-        self.valid_temperature = self.w.temperature('celsius')['temp']
-        self.max_temperature = self.w.temperature('celsius')['temp_max']
-        self.min_temperature = self.w.temperature('celsius')['temp_min']
-        
-        self.engine.say(f'Сьогодні в місті {self.result} {int(self.valid_temperature)} градусів')
-        self.engine.say(f'Максимальна кількість градусів - {int(self.max_temperature)+1}')
-        self.engine.say(f'Мінімальна кількість градусів - {int(self.min_temperature)-1}')
-        self.engine.runAndWait()
+            self.valid_temperature = self.w.temperature('celsius')['temp']
+            self.max_temperature = self.w.temperature('celsius')['temp_max']
+            self.min_temperature = self.w.temperature('celsius')['temp_min']
+
+            self.engine.say(f'Сьогодні в місті {self.result} {int(self.valid_temperature)} градусів')
+            self.engine.say(f'Максимальна кількість градусів - {int(self.max_temperature)+1}')
+            self.engine.say(f'Мінімальна кількість градусів - {int(self.min_temperature)-1}')
+            self.engine.runAndWait()
+        # if city not found
+        except pyowm.commons.exceptions.NotFoundError:
+            self.engine.say('Вибачте, я не почула в якому місті потрібно дізнатися погоду')
+            self.engine.runAndWait()
 
 
     def speak_with_user(self, result):
