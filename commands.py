@@ -12,18 +12,22 @@ from datetime import datetime
 from help import Help
 from random import choice
 
-"""
-    This file contain all commands
-"""
 class Commands(Help):
+    '''
+        this class contains functions that a voice assistant can perform
+        each function performs a separate functionality
+        
+    '''
 
+    # speech settings 
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
     rate = engine.getProperty('rate')
-    engine.setProperty('rate', rate-30)
+    engine.setProperty('rate', rate-30) 
     engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localization on my computer
 
     coin = ['орел', 'решка'] # if user say 'flip coin' 
+
     cube = [
         'одиниця', 'двійка', 'трійка', 
         'читвірка', 'п"ятірка', 'шістка'
@@ -312,7 +316,7 @@ class Commands(Help):
                             self.commands[key](self, self.result) #start function
                     except TypeError:
                         pass
-
+            
         return
 
 
