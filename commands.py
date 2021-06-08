@@ -1,3 +1,4 @@
+from logging import exception
 import sys
 import os
 import pyttsx3
@@ -67,7 +68,7 @@ class Commands(Help):
         self.result = result
         self.result = self.result.replace('погода ', '')
         self.result = self.result.replace('яка погода ', '')
-        self.result = self.result.replace('яка сьогодні погода ', '')
+        self.result = self.result.replace('яка сьогодні погода в ', '')
         
         self.owm = pyowm.OWM('6f7f209b9973d7cfbdcbf0c6c651eb3f')
         self.mgr = self.owm.weather_manager()
@@ -95,21 +96,29 @@ class Commands(Help):
         if self.result == 'як справи' or self.result == 'як ти' or self.result == 'як твої справи':
             self.engine.say(choice(self.mood))
             self.engine.runAndWait()
-        elif self.result == 'чо робиш' or self.result == 'чим займаєшся' or self.result == 'що нового':
+        elif self.result == 'що робиш' or self.result == 'чим займаєшся' or self.result == 'що нового':
             self.engine.say(choice(self.actions))
             self.engine.runAndWait()
 
 
     def shutdown_pc(self, *args):
-        self.engine.say('Вимимкаю комп"ютер')
-        self.engine.runAndWait()
-        os.system('shutdown /s /t 1')
+        try:
+            self.engine.say('Вимимкаю комп"ютер')
+            self.engine.runAndWait()
+            os.system('shutdown /s /t 1')
+        except exception:
+            self.engine.say('Виникли помилки при вимкненні комп"ютера')
+            self.engine.runAndWait()
 
 
     def restart_pc(self, *args):
-        self.engine.say('Перезавантажую комп"ютер')
-        self.engine.runAndWait()
-        os.system('shutdown /r /t 1')
+        try:
+            self.engine.say('Перезавантажую комп"ютер')
+            self.engine.runAndWait()
+            os.system('shutdown /r /t 1')
+        except exception:
+            self.engine.say('Виникли помилки при перезавантаженні комп"ютера')
+            self.engine.runAndWait()
 
 
     def calculate(self, result):
