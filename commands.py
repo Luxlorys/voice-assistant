@@ -307,12 +307,11 @@ class Commands(Help):
                     self.engine.say('Виникли помилки при розпізнанні мови. Перевірте підключення до мережі')
                     self.engine.runAndWait()
             
-            # loop over all tuples
             # я из-за регулярок весь день не кушал, извините за такой плохой код, мне самому не нравится
-            for key in self.commands.keys():
-                for kkey in key: # loop over all commands inside tuple
+            for key in self.commands.keys(): # loop over all tuples
+                for item in key: # loop over all commands inside tuple
                     try:
-                        if re.match(kkey, self.result):
+                        if re.match(item, self.result):
                             self.commands[key](self, self.result) #start function
                     except TypeError:
                         pass
