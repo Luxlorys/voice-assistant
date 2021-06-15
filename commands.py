@@ -1,7 +1,8 @@
 from logging import exception
-import sys
+# import sys
 import os
 import pyttsx3
+from pyttsx3 import engine
 import speech_recognition
 import re
 import webbrowser
@@ -11,6 +12,7 @@ import pyowm
 from datetime import datetime
 from help import Help
 from random import choice
+from GoogleNews import GoogleNews
 
 class Commands(Help):
     '''
@@ -26,6 +28,9 @@ class Commands(Help):
     engine.setProperty('rate', rate-30) 
     engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localization on my computer
 
+    googlenews = GoogleNews()
+    googlenews.set_lang('ua')
+
     coin = ['орел', 'решка'] # if user say 'flip coin' 
 
     cube = [
@@ -36,20 +41,22 @@ class Commands(Help):
     # if user say 'hallo'
     hello = [
         'Вітаю, я Сівія', 'Привіт, я Сівія', 'Привітусики',
-        'Рада чути вас', 'Добридень', 'Добрий день',
+        'Рада чути вас', 'Оо, це ви? давно не бачилися', 'Добрий день',
         'Рада вітати вас', 'Доброго здоров"я', 'День добрий',
+        'Добридень', 'Ну нарешті ви повернулися', 'знову ви? і чого вам треба цього разу?'
     ]
 
     # if user leave
     leave = [
-        'До зустрічі', 'Побачимося', 'Сподіваюся почути вас знову',
+        'До зустрічі', 'фух, ось і перерва на попоїсти', 'Побачимося', 'Сподіваюся почути вас знову',
         'Бувайте здорові', 'Всього вам доброго', 'Всього найкращого',
         'На все добре', 'Була рада вам допомогти', 'Прощавайте',
+        'щось я запихалася, нарешті зможу відпочити'
     ]
 
     # if user say 'how are you?'
     mood = [
-        'Як завжди все добре, а ти як?', 'Настрій відмінний - як перед вихідними', 'Сплю і бачу страшний сон, в якому ти у мене питаєш, що я роблю',
+        'Як завжди все добре, а ти як?', 'Настрій відмінний - як перед вихідними', 'Сплю і бачу страшний сон, в якому ти у мене питаєш, як в мене справи',
         'Все добре, дякую, що цікавитеся. А ви як?', 'Мрію про щасливе майбутнє', 'Як у казці!', 
         'Як завжди - відмінно', 'Дякую. Все гаразд', 'У вашій компанії стало краще'
     ]
@@ -61,10 +68,37 @@ class Commands(Help):
     ]
 
 
+    def get_news(self, result):
+        self.result = result
+        self.result = self.result.replace('новини ', '')
+        self.result = self.result.replace('які новини в ', '')
+        self.result = self.result.replace('які сьогодні новини в ', '')
+        self.result = self.result.replace('актуальні новини в ', '')
+        self.result = self.result.replace('актуальні новини ', '')
+        
+        try:
+            self.googlenews.search(self.result)
+            self.googlenews.get_page(1)
+            self.links = self.googlenews.get_links()
+            self.titles = self.googlenews.get_texts()
+            
+            for link in self.links[0:5]:
+                webbrowser.open(link)
+
+            for title in self.titles[0:5]:
+                self.engine.say(title)
+                self.engine.runAndWait()
+
+        except exception:
+            self.engine.say()
+            self.engine.runAndWait()
+
+
     def get_info_about_assistant(self, *args):
-        self.engine.say('''мене звуть сівія, я ваш особистий голосовий помічник,
-        зараз я вмію виконувати приблизно п"ятнадцять функцій, натисніть Ф2 або кнопку допомога,
-        щоб дізнатися про всі мої можливості''')
+        self.engine.say('Добре, що ви спитали, давно хотіла з кимось поговорити')
+        self.engine.say(' мене звуть Сівія, дуже просте ім"я, чи не правда')
+        self.engine.say('я багато чого вмію, але хочу ще більше, сподіваюся програмісти, які мене розробляли модифікують мене')
+        self.engine.say('Якщо ж ви хочете детальніше дізнатися про всі мої можливості то просто натисніть Ф2 або на кнопку Допомога')
         self.engine.runAndWait()
 
 
@@ -86,8 +120,8 @@ class Commands(Help):
             self.min_temperature = self.w.temperature('celsius')['temp_min']
 
             self.engine.say(f'Сьогодні в місті {self.result} {int(self.valid_temperature)} градусів')
-            self.engine.say(f'Максимальна кількість градусів - {int(self.max_temperature)+1}')
-            self.engine.say(f'Мінімальна кількість градусів - {int(self.min_temperature)-1}')
+            self.engine.say(f'Максимальна кількість градусів - {int(self.max_temperature)+2}')
+            self.engine.say(f'Мінімальна кількість градусів - {int(self.min_temperature)-4}')
             self.engine.runAndWait()
         # if city not found
         except pyowm.commons.exceptions.NotFoundError:
@@ -230,11 +264,15 @@ class Commands(Help):
 
     def google_search(self, result):
         self.result = result
+        self.engine.say(f'Ось що я знайшла по запиту {self.result}')
+        self.engine.runAndWait()
         return webbrowser.open(f"https://www.google.com/search?q={self.result}")
 
 
     def youtube_search(self, result):
         self.result = result
+        self.engine.say(f'Ось що я знайшла по запиту {self.result}')
+        self.engine.runAndWait()
         self.result = self.result.replace('відео ', "")
         self.result = self.result.replace('включи ', "")
         self.result = self.result.replace('YouTube ', "")
@@ -291,7 +329,7 @@ class Commands(Help):
 
             # self.r = speech_recognition.Recognizer()
             with speech_recognition.Microphone() as source:
-
+                
                 try:
                     self.audio = self.r.listen(source, 3, 3)
                     try:
@@ -337,4 +375,5 @@ class Commands(Help):
     'що робиш', 'чим займаєшся', 'що нового'): speak_with_user,
     ('погода', 'яка погода', 'яка сьогодні погода'): get_weather,
     ('хто ти така', 'розкажи про себе', 'як тебе звуть', 'інформація про асистента'): get_info_about_assistant,
+    ('новини', 'які сьогодні новини в ', 'актульні новини в ', 'актуальні новини ', 'які новини в '): get_news
     }
