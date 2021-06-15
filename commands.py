@@ -28,6 +28,7 @@ class Commands(Help):
     engine.setProperty('rate', rate-30) 
     engine.setProperty('voice', voices[3].id) # id[3] is ukrainian localization on my computer
 
+    # google new settings
     googlenews = GoogleNews()
     googlenews.set_lang('ua')
 
@@ -66,6 +67,14 @@ class Commands(Help):
         'Намагаюся навчити кота говорити «привіт»', 'Вирішила влаштувати дегустацію чаю', 'Відзначаю день міста в Кейптауні', 
         'Переглядаю «Санта-Барбару», останній сезон', 'Ставлю рекорд з поїдання мармеладу', 'Сушу сухарі'
     ]
+
+    music_list = [
+        'http://surl.li/wyfs', 'http://surl.li/wyfu', 'http://surl.li/wyfw',
+        'http://surl.li/wyfx', 'http://surl.li/wygc', 'http://surl.li/wygd'
+    ]
+
+    def open_random_music(self, *args):
+        return webbrowser.open(choice(self.music_list))
 
 
     def get_news(self, result):
@@ -361,7 +370,7 @@ class Commands(Help):
     ("привіт", "добрий вечір", "день добрий", "добрий день", "вітаю", "йо", "хай"): say_hello,
     ('пока', "до побачення", "бувай", "виключись", "вимкнись"): exit_app,
     ("знайди", "шукай", "шукати", "гугл", "де знаходиться", "курс", "який курс", "загугли"): google_search,
-    ('відео', "включи відео", "ютуб", "відос", "включи", 'youtube'): youtube_search,
+    ('відео', "включи відео", "ютуб", "відос", 'youtube'): youtube_search,
     ("термін", "слово", "вікіпедія", "вікі", "хто такий", "що таке"): search_tearm_in_wiki,
     ('що ти', "допомога", "допоможи", "як користуватися", 'вміння', "твої вміння"): help_user,
     ('котра година', "скільки годин", "година", "який час", "час", "скільки зараз"): time,
@@ -375,5 +384,6 @@ class Commands(Help):
     'що робиш', 'чим займаєшся', 'що нового'): speak_with_user,
     ('погода', 'яка погода', 'яка сьогодні погода'): get_weather,
     ('хто ти така', 'розкажи про себе', 'як тебе звуть', 'інформація про асистента'): get_info_about_assistant,
-    ('новини', 'які сьогодні новини в ', 'актульні новини в ', 'актуальні новини ', 'які новини в '): get_news
+    ('новини', 'які сьогодні новини в ', 'актульні новини в ', 'актуальні новини ', 'які новини в '): get_news,
+    ('включи музику', 'музика', 'хочу послухати музику', 'відкрий музику', 'слухати музику'): open_random_music
     }
